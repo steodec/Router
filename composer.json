@@ -1,0 +1,24 @@
+{
+  "name": "steodec/router",
+  "description": "Router use by Micro Framework",
+  "version": "2.0",
+  "type": "library",
+  "require": {
+    "php": ">=8.0",
+    "haydenpierce/class-finder": "0.4.3"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Steodec\\Router\\": "src/"
+    }
+  },
+
+  "authors": [
+    {
+      "name": "steodec",
+      "email": "paul.tedesco@live.fr"
+    }
+  ],
+  "minimum-stability": "stable"
+}
