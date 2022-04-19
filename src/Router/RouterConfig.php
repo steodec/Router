@@ -74,7 +74,7 @@ class RouterConfig
         $class = new ReflectionClass($controller);
         $routeArray = [];
         foreach ($class->getMethods() as $method) {
-            $router = $method->getAttributes(\Steodec\Attributes\Route::class);
+            $router = $method->getAttributes(\Steodec\Router\Attributes\Route::class);
             if (empty($router)) continue;
             foreach ($router as $r) {
                 $newRoute = $r->newInstance();
