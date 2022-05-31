@@ -1,7 +1,7 @@
 {
   "name": "steodec/router",
   "description": "Router use by Micro Framework",
-  "version": "2.0",
+  "version": "2.1",
   "type": "library",
   "require": {
     "php": ">=8.0",

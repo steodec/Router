@@ -7,8 +7,7 @@ use ReflectionClass;
 use ReflectionException;
 use HaydenPierce\ClassFinder\ClassFinder;
 
-class RouterConfig
-{
+class RouterConfig {
     /**
      * @var string
      */
@@ -19,9 +18,8 @@ class RouterConfig
      */
     private mixed $middleware;
 
-    public function __construct(string $namespace, ?callable $middleware = NULL)
-    {
-        $this->namespace = $namespace;
+    public function __construct(string $namespace, ?callable $middleware = NULL) {
+        $this->namespace  = $namespace;
         $this->middleware = $middleware;
     }
 
@@ -30,48 +28,34 @@ class RouterConfig
      * @throws ReflectionException
      * @throws Exception
      */
-    public function run()
-    {
-        $classes = ClassFinder::getClassesInNamespace($this->getNamespace(), ClassFinder::RECURSIVE_MODE);
-        $routes = [];
-        foreach ($classes as $class) {
-            $routes = array_merge($routes, self::registerController($class));
-        }
+    public function run() {
+        $routes = $this->getRoute();
         $router = new Router($_GET['url']);
-        foreach ($routes as $route) {
-            if (empty($route->getIsGranted())):
-                $router->add($route->getPath(), $route->getCallable(), $route->getName(), $route->getMethod());
-            else:
-                if ($this->getMiddleware() == NULL or $this->getMiddleware()($route)) {
-                    $router->add($route->getPath(), $route->getCallable(), $route->getName(), $route->getMethod());
-                }
-            endif;
-        }
+        foreach ($routes as $route):
+            $router->add($route->getPath(), $route->getCallable(), $route->getName(), $route->getMethod());
+        endforeach;
         $router->run();
     }
 
     /**
      * @return string
      */
-    public function getNamespace(): string
-    {
+    public function getNamespace(): string {
         return $this->namespace;
     }
 
     /**
      * @param string $namespace
      */
-    public function setNamespace(string $namespace): void
-    {
+    public function setNamespace(string $namespace): void {
         $this->namespace = $namespace;
     }
 
     /**
      * @throws ReflectionException
      */
-    public function registerController(string $controller): array
-    {
-        $class = new ReflectionClass($controller);
+    public function registerController(string $controller): array {
+        $class      = new ReflectionClass($controller);
         $routeArray = [];
         foreach ($class->getMethods() as $method) {
             $router = $method->getAttributes(\Steodec\Attributes\Route::class);
@@ -90,30 +74,34 @@ class RouterConfig
     /**
      * @return callable|null
      */
-    public function getMiddleware(): ?callable
-    {
+    public function getMiddleware(): ?callable {
         return $this->middleware;
     }
 
     /**
      * @param callable|null $middleware
      */
-    public function setMiddleware(mixed $middleware): void
-    {
+    public function setMiddleware(mixed $middleware): void {
         $this->middleware = $middleware;
     }
 
     /**
-     * @throws ReflectionException
-     * @throws Exception
      * @return array
+     * @throws Exception
+     * @throws ReflectionException
      */
-    public function getRoute(): array
-    {
+    public function getRoute(): array {
         $classes = ClassFinder::getClassesInNamespace($this->getNamespace(), ClassFinder::RECURSIVE_MODE);
-        $routes = [];
+        $routes  = [];
         foreach ($classes as $class) {
             $routes = array_merge($routes, self::registerController($class));
+        }
+        foreach ($routes as $key => $route) {
+            if (!empty($route->getIsGranted())):
+                if (!$this->getMiddleware() == NULL or !$this->getMiddleware()($route)) {
+                    unset($routes[$key]);
+                }
+            endif;
         }
         return $routes;
     }
