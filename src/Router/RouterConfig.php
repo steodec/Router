@@ -98,11 +98,12 @@ class RouterConfig {
         }
         foreach ($routes as $key => $route) {
             if (!empty($route->getIsGranted())):
-                if (!$this->getMiddleware() == NULL or !$this->getMiddleware()($route)) {
+                if ($this->getMiddleware() != NULL or !$this->getMiddleware()($route)) {
                     unset($routes[$key]);
                 }
             endif;
         }
+        var_dump($routes);
         return $routes;
     }
 }
