@@ -96,14 +96,14 @@ class RouterConfig {
         foreach ($classes as $class) {
             $routes = array_merge($routes, self::registerController($class));
         }
-        foreach ($routes as $key => $route) {
-            if (!empty($route->getIsGranted())):
-                if ($this->getMiddleware() != NULL or !$this->getMiddleware()($route)) {
-                    unset($routes[$key]);
-                }
-            endif;
-        }
-        var_dump($routes);
+        foreach ($routes as $routeArray):
+            foreach ($routeArray as $key => $route):
+                if (!empty($route->getIsGranted())):
+                    if ($this->getMiddleware() != NULL or !$this->getMiddleware()($route))
+                        unset($routes[$key]);
+                endif;
+            endforeach;
+        endforeach;
         return $routes;
     }
 }
